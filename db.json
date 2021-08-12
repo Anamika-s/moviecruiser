@@ -1,6 +1,84 @@
 {
   "movies": [
+    {
+      "id": 1,
+      "title": "The Avengers",
+      "posterPath": "images/avengers.jpg",
+      "releaseYear": 2012
+    },
+    {
+      "id": 2,
+      "title": "The Dark Knight",
+      "posterPath": "images/darkknight.jpg",
+      "releaseYear": 2008
+    },
+    {
+      "id": 3,
+      "title": "Monday",
+      "posterPath": "images/monday.jpg",
+      "releaseYear": 2020
+    },
+    {
+      "id": 4,
+      "title": "Tenet",
+      "posterPath": "images/tenet.jpg",
+      "releaseYear": 2020
+    },
+    {
+      "id": 5,
+      "title": "Annihilation",
+      "posterPath": "images/annihilation.jpg",
+      "releaseYear": 2018
+    },
+    {
+      "id": 6,
+      "title": "Johnny English Reborn",
+      "posterPath": "images/johnny.jpg",
+      "releaseYear": 2011
+    },
+    {
+      "id": 7,
+      "title": "How to Train Your Dragon 2",
+      "posterPath": "images/dragon.jpg",
+      "releaseYear": 2014
+    },
+    {
+      "id": 8,
+      "title": "Triangle",
+      "posterPath": "images/triangle.jpg",
+      "releaseYear": 2009
+    },
+    {
+      "id": 9,
+      "title": "The Shawshank Redemption",
+      "posterPath": "images/shawshank.jpeg",
+      "releaseYear": 1994
+    },
+    {
+      "id": 10,
+      "title": "The Lord of the Rings: The Return of the King",
+      "posterPath": "images/lord.jpg",
+      "releaseYear": 2003
+    },
+    {
+      "id": 11,
+      "title": "Deadpool 2",
+      "posterPath": "images/dp2.jpg",
+      "releaseYear": 2018
+    }
   ],
   "favourites": [
+    {
+      "id": 1,
+      "title": "The Avengers",
+      "posterPath": "images/avengers.jpg",
+      "releaseYear": "2012"
+    },
+    {
+      "id": 2,
+      "title": "The Dark Knight",
+      "posterPath": "images/darkknight.jpg",
+      "releaseYear": "2008"
+    }
   ]
 }
