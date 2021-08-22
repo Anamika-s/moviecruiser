@@ -1,89 +1,142 @@
-async function getMovies() {
-	await fetch('http://localhost:3000/movies')
- .then(function(response){
-		return response.json();
-	})
-	.then(function(obj){
-		
-		console.log(obj);
-		var addedString="";
-		for(i=0;i<obj.length;i++)
-		{
-		addedString+="<li id="+i+"><img id="+i+"i width=150px height=220px src='"+obj[i].posterPath+"'><br><div id="+i+"t>"+obj[i].title+"</div><div id="+i+"r>"+obj[i].releaseYear+"</div></li><button type='button' class='btn btn-outline-primary'onclick=addFavourite("+i+")>Add to Favourites</button><br><br><br>";
-		document.getElementById("moviesList").innerHTML=addedString;
-	    }
-	})
-	.catch(function(error){
-		console.error();('Something wrong with fetching json file');
-		console.error(error);
-    });	
+let movieItems;
+let favItems;
+
+const getMovies = () => {
+    return fetch("http://localhost:3000/movies").then((result) => {
+        if (result.status == 200) {
+            return Promise.resolve(result.json());
+        } else {
+            return Promise.reject("Unable to retrieve the movie list");
+        }
+    }).then(resultMovie => {
+        movieItems = resultMovie;
+        createMovieList();
+        return movieItems;
+    }).catch(error => {
+        throw new Error(error);
+    })
 }
 
-
-async function getFavourites() {await fetch('http://localhost:3000/favourites')
-.then(function(response){
-	 return response.json();
- })
- .then(function(obj){
-	 
-	 console.log(obj);
-	 var addedString="";
-	 for(i=0;i<obj.length;i++)
-	 {
-	 addedString+="<li id="+i+"><img id="+i+"i width=150px height=220px src='"+obj[i].posterPath+"'><br><div id="+i+"t>"+obj[i].title+"</div><div id="+i+"r>"+obj[i].releaseYear+"</div></li><button type='button' class='btn btn-outline-primary'onclick=addFavourite("+i+")>Add to Favourites</button><br><br><br>";
-	 document.getElementById("favouritesList").innerHTML=addedString;
-		 }
- })
- .catch(function(error){
-	 console.error();('Something wrong with fetching json file');
-	 console.error(error);
-	 });	
+const postMovie = (myMovie) => {
+    return fetch("http://localhost:3000/favourites", {
+        method: 'POST',
+        body: JSON.stringify(myMovie),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    }).then((result) => {
+        if (result.status == 201) {
+            return Promise.resolve(favItems);
+        } else {
+            return Promise.reject("Movie is already added to favourites");
+        }
+    })
 }
-	
-var addedFav="";
-function addFavourite(j) {
-	console.log(document.getElementById(j+"t").innerHTML);
-	if(addedFav.includes(document.getElementById(j).innerHTML)==true)
-	{
-		alert("Already added");
-	}
-	else
-    {
-		
-	addedFav+="<li>"+document.getElementById(j).innerHTML+"</li><br><br><br>";
-	document.getElementById("favouritesList").innerHTML=addedFav;
-	
-	
-	
-	fetch('http://localhost:3000/favourites',{
-	
-		method:'POST',
-		body:JSON.stringify({
-			id:j+1,
-			title:document.getElementById(j+"t").innerHTML,
-			posterPath:document.getElementById(j+"i").getAttribute("src"),
-			releaseYear:document.getElementById(j+"r").innerHTML,		
-		}),
-		headers: {
-			'Content-type': 'application/json; charset=UTF-8',
-	 
-},
-})
-  .then((response) => response.json())
-  .then((json) => console.log(json))
-	.catch((err)=> { console.log(err)});
-	 
+
+//Get the Favourites Movie list
+function getFavourites() {
+    
+    return fetch("http://localhost:3000/favourites").then((result) => {
+        if (result.status == 200) {
+            return Promise.resolve(result.json());
+        } else {
+            return Promise.reject("Error");
+        }
+    }).then(result => {
+        favItems = result;
+        createFavouriteList();
+        return result;
+    }).catch(error => {
+        throw new Error(error);
+    })
+
 }
+
+function addFavourite(id) {
+    if (!isMoviePresentInFavItems(id)) {
+        let movieObject = getMovieById(id)
+        favItems.push(movieObject);
+        //Add Favourite call
+        return fetch("http://localhost:3000/favourites", {
+            method: 'POST',
+            body: JSON.stringify(movieObject),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then((result) => {
+            if (result.status == 200 || result.status == 201) {
+                return Promise.resolve(favItems);
+            } else {
+                return Promise.reject("Movie is already added to favourites");
+            }
+        }).then((favMovieResult) => {
+            createFavouriteList();
+            return favMovieResult;
+        }).catch(err => {
+            throw new Error(err);
+        })
+
+    } else {
+        throw new Error("Movie is already added to favourites");
+    }
+
 }
-// module.exports = {
-// 	getMovies,
-// 	getFavourites,
-// 	addFavourite
-// };
 
-// You will get error - Uncaught ReferenceError: module is not defined
-// while running this script on browser which you shall ignore
-// as this is required for testing purposes and shall not hinder
-// it's normal execution
+function isMoviePresentInFavItems(selectedMovieId) {
+    for (let favmovie in favItems) {
+        if (selectedMovieId == favItems[favmovie].id) {
+            return true;
+        }
+    }
+    return false;
+}
 
+function getMovieById(id) {
+    for (let movie in movieItems) {
+        if (id == movieItems[movie].id) {
+            return movieItems[movie];
+        }
+    }
+}
 
+const createMovieList = () => {
+    let domMovieList = '';
+    movieItems.forEach(element => {
+        domMovieList = domMovieList + `
+        <div id="${element.id}" class="list-group-item d-flex flex-column align-items-center">
+        <h6>${element.title}</h6>
+        <img src="${element.posterPath}" class="img-fluid pb-2" alt="Responsive image">
+        <p>Year: <span id="year">${element.releaseDate}</span></p>
+        <button
+        onclick="addFavourite(${element.id})" type="button" class="btn btn-primary">
+        Add to Favourites
+        </button>
+        </div>
+        `;
+    });
+    document.getElementById("moviesList").innerHTML = domMovieList;
+}
+
+const createFavouriteList = () => {
+    let domFavouriteList = '';
+    let childNode = document.getElementById("favouritesList");
+    childNode.innerHTML = '';
+    favItems.forEach(element => {
+        domFavouriteList = domFavouriteList + `
+        <div id="${element.id}" class="list-group-item d-flex flex-column align-items-center">
+        <h6>${element.title}</h6>
+        <img src="${element.posterPath}" class="img-fluid pb-2" alt="Responsive image">
+        <p>Year: <span id="year">${element.releaseDate}</span></p>
+        </div>
+        `;
+    });
+    childNode.innerHTML = domFavouriteList;
+}
+
+module.exports = {
+    getMovies,
+    getFavourites,
+    addFavourite
+};
